@@ -57,7 +57,6 @@
           path: results.json
   
     # Convert pipeline scan output to SARIF format  
-    process-results:
       needs: pipeline-scan
       runs-on: ubuntu-latest
       steps:
