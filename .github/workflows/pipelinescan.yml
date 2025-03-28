@@ -45,26 +45,32 @@
         with:
           name: CodePackage
       
-      #  Submit  project to pipeline scan
-      - name: Pipeline Scan
-        run: |
-          java -jar /opt/veracode/pipeline-scan.jar --veracode_api_id="${{secrets.VERACODE_API_ID}}" --veracode_api_key="${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file="project.zip" --app_id="${{secrets.VERACODE_APP_ID}}" --json_output_file="results.json"
-        continue-on-error: true
-  
-      - uses: actions/upload-artifact@v4
+       #  Submit  project to pipeline scan
+    - name: Pipeline Scan
+      run: |
+        java -jar /opt/veracode/pipeline-scan.jar --veracode_api_id="${{secrets.VERACODE_API_ID}}" --veracode_api_key="${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file="project.zip" --app_id="${{secrets.VERACODE_APP_ID}}" --json_output_file="results.json"
+      continue-on-error: true
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ScanResults
+        path: results.json
+
+  # Convert pipeline scan output to SARIF format  
+  results_to_sarif:
+    needs: pipeline-scan
+    runs-on: ubuntu-latest
+    name: import pipeline results to sarif
+    steps:    
+      - name: Get scan results
+        uses: actions/download-artifact@v4
         with:
           name: ScanResults
-          path: results.json
-  
-    # Convert pipeline scan output to SARIF format 
-  
-      - name: convert
-  uses: veracode/veracode-pipeline-scan-results-to-sarif@v1.0.1
-  with:
-    pipeline-results-json: results.json
-    output-results-sarif: veracode-results.sarif
-    finding-rule-level: "4:3:0"
-  continue-on-error: true
+          #name: "Veracode Pipeline-Scan Results"          
+      - name: Convert pipeline scan output to SARIF format
+        id: convert
+        uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.7
         with:
-      # Path to SARIF file relative to the root of the repository
-          sarif_file: veracode-results.sarif     
+          pipeline-results-json: results.json
+        
+          output-results-sarif: results.sarif   
