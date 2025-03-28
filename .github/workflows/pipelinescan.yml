@@ -56,16 +56,7 @@
           name: ScanResults
           path: results.json
   
-    # Convert pipeline scan output to SARIF format  
-      needs: pipeline-scan
-      runs-on: ubuntu-latest
-      steps:
-  
-        - name: Retrieve results
-      uses: actions/download-artifact@v4
-      with:
-        name: ScanResults
-        run: cat results.json
+    # Convert pipeline scan output to SARIF format 
   
       - name: convert
   uses: veracode/veracode-pipeline-scan-results-to-sarif@v1.0.1
