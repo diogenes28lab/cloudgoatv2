@@ -21,9 +21,3 @@ jobs:
           filepath: 'app/target/verademo.war'
           vid: '${{ secrets.API_ID }}'
           vkey: '${{ secrets.API_KEY }}'
-#          createsandbox: 'true'
-#          sandboxname: 'SANDBOXNAME'
-#          scantimeout: 0
-#          exclude: '*.js'
-#          include: '*.war'
-#          criticality: 'VeryHigh'
